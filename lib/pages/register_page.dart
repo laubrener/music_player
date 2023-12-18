@@ -1,48 +1,44 @@
-import 'package:flutter/material.dart';
+import 'package:music_player/pages/login.dart';
 import 'package:music_player/pages/music_player_page.dart';
+import 'package:music_player/services/auth_service.dart';
 import 'package:music_player/widgets/custom_input.dart';
 import 'package:music_player/widgets/custom_labels.dart';
 import 'package:music_player/widgets/login_button.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../helpers/show_alert.dart';
-import '../services/auth_service.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class RegisterPage extends StatelessWidget {
+  const RegisterPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SafeArea(
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
+      body: SafeArea(
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.9,
           child: const Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Background(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Logo(
-                        title: 'Music Player',
-                      ),
-                      _Form(),
-                    ],
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Logo(title: "Sign Up"),
+                        _Form(),
+                      ],
+                    ),
                   ),
                 ),
                 LoginLabels(
-                  page: "register",
-                  text: "Don't have an account",
-                  btn: "Create account",
-                ),
+                    page: "login",
+                    text: "Already have an account",
+                    btn: "Login"),
                 Text("Terms and conditions")
               ]),
         ),
       ),
-    ));
+    );
   }
 }
 
@@ -56,6 +52,7 @@ class _Form extends StatefulWidget {
 class __FormState extends State<_Form> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final nameController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
@@ -65,6 +62,12 @@ class __FormState extends State<_Form> {
       padding: const EdgeInsets.symmetric(horizontal: 50),
       child: Column(
         children: [
+          CustomInput(
+            icon: Icons.perm_identity,
+            placeholder: "Name",
+            keyboardType: TextInputType.text,
+            textController: nameController,
+          ),
           CustomInput(
             icon: Icons.mail_outline,
             placeholder: "Email",
@@ -78,59 +81,25 @@ class __FormState extends State<_Form> {
             textController: passwordController,
           ),
           LoginButton(
-            text: "Login",
+            text: "Create account",
             onPressed: authService.authenticating
                 ? () {}
                 : () async {
                     FocusScope.of(context).unfocus();
-                    final loginOk = await authService.login(
+                    final registerOk = await authService.register(
+                        nameController.text.trim(),
                         emailController.text.trim(),
                         passwordController.text.trim());
 
-                    if (loginOk == true) {
+                    if (registerOk == true) {
                       // socketService.connect();
                       Navigator.pushReplacementNamed(context, 'songs');
                     } else {
-                      showAlert(
-                          context, 'Login incorrect', 'Check your credentials');
+                      showAlert(context, 'Registro incorrecto', registerOk);
                     }
                   },
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class Logo extends StatelessWidget {
-  final title;
-
-  const Logo({super.key, required this.title});
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 50),
-      child: Column(
-        children: [
-          Container(
-            height: 125,
-            width: 125,
-            decoration: BoxDecoration(
-              border: Border.all(
-                width: 8,
-                color: Colors.pink.shade300,
-              ),
-              borderRadius: BorderRadius.circular(25),
-              color: Colors.transparent,
-            ),
-            child: Icon(
-              Icons.music_note,
-              color: Colors.pink.shade300,
-              size: 70,
-            ),
           ),
-          const SizedBox(height: 30),
-          Text(title, style: const TextStyle(fontSize: 30)),
+          const SizedBox(height: 50)
         ],
       ),
     );

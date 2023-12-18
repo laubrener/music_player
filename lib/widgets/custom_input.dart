@@ -33,6 +33,7 @@ class CustomInput extends StatelessWidget {
           obscureText: false,
           decoration: InputDecoration(
             prefixIcon: Icon(icon),
+            focusColor: Colors.pink.shade100,
             focusedBorder: InputBorder.none,
             border: InputBorder.none,
             hintText: placeholder,

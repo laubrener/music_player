@@ -53,6 +53,55 @@ class AuthService with ChangeNotifier {
     }
   }
 
+  Future register(String nombre, String email, String password) async {
+    authenticating = true;
+
+    final data = {
+      'nombre': nombre,
+      'email': email,
+      'password': password,
+    };
+
+    Uri url = Uri.parse('${Environment.apiUrl}login/new');
+    final resp = await http.post(url, body: jsonEncode(data), headers: {
+      'Content-Type': 'application/json',
+    });
+
+    authenticating = false;
+    if (resp.statusCode == 200) {
+      LoginModel loginResponse = loginModelFromJson(resp.body);
+      usuario = loginResponse.usuario;
+
+      await _guardarToken(loginResponse.token);
+      return true;
+    } else {
+      final respBody = jsonDecode(resp.body);
+      return respBody['msg'];
+    }
+  }
+
+  Future isLoggedIn() async {
+    final token = await _storage.read(key: 'token');
+
+    print(token);
+
+    Uri url = Uri.parse('${Environment.apiUrl}login/renew');
+    final resp = await http.get(url,
+        headers: {'Content-Type': 'application/json', 'x-token': token!});
+
+    authenticating = false;
+    if (resp.statusCode == 200) {
+      LoginModel loginResponse = loginModelFromJson(resp.body);
+      usuario = loginResponse.usuario;
+
+      await _guardarToken(loginResponse.token);
+      return true;
+    } else {
+      logout();
+      return false;
+    }
+  }
+
   Future _guardarToken(String token) async {
     return await _storage.write(key: 'token', value: token);
   }

@@ -29,8 +29,10 @@ class MusicPlayerPage extends StatelessWidget {
 }
 
 class Background extends StatelessWidget {
+  final child;
   const Background({
     super.key,
+    this.child,
   });
 
   @override
@@ -48,6 +50,7 @@ class Background extends StatelessWidget {
                 Color(0xff33333E),
                 Color(0xff201E28),
               ])),
+      child: child,
     );
   }
 }
