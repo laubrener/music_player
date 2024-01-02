@@ -16,6 +16,8 @@ class CustomInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FocusNode myFocusNode = FocusNode();
+
     return Container(
         padding: const EdgeInsets.only(top: 5, bottom: 5, left: 5, right: 20),
         margin: const EdgeInsets.only(bottom: 20),
@@ -27,12 +29,15 @@ class CustomInput extends StatelessWidget {
           ),
         ),
         child: TextField(
+          cursorColor: Colors.pink.shade100,
           controller: textController,
           autocorrect: false,
           keyboardType: keyboardType,
           obscureText: false,
+          focusNode: myFocusNode,
           decoration: InputDecoration(
             prefixIcon: Icon(icon),
+            hoverColor: Colors.pink.shade100,
             focusColor: Colors.pink.shade100,
             focusedBorder: InputBorder.none,
             border: InputBorder.none,
